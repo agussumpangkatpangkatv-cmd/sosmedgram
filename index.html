@@ -132,6 +132,17 @@
           </button>
         </div>
 
+        <!-- Info Akun Admin Bawaan -->
+        <div class="mt-6 p-3.5 rounded-2xl bg-[#12171E] border border-[#222B36] text-xs text-gray-400">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-gray-200 flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-[#0095F6]"></i> Akun Admin Bawaan:
+            </span>
+            <button type="button" onclick="quickFillAdmin()" class="text-[#0095F6] hover:underline font-semibold">Isi Otomatis</button>
+          </div>
+          <p>Username: <span class="text-white font-mono">admin</span> • Password: <span class="text-white font-mono">admin123</span></p>
+        </div>
+
         <!-- Tombol Create New Account -->
         <div class="mt-8">
           <button 
@@ -572,11 +583,28 @@
                   <span>Akun Privat</span>
                 </div>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  Jika aktif, hanya pengikut yang sudah saling berteman (follback) yang dapat melihat postingan & reels kamu.
+                  Jika aktif, hanya pengguna yang sudah saling berteman (follback) yang dapat melihat postingan & reels kamu.
                 </p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer shrink-0">
                 <input type="checkbox" id="toggle-private" onchange="toggleAccountPrivacy(this.checked)" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0095F6]"></div>
+              </label>
+            </div>
+
+            <!-- 2B. Pengaturan Chat: Saling Chat Tanpa Berteman / Harus Berteman Dulu -->
+            <div class="p-4 flex items-center justify-between gap-4">
+              <div>
+                <div class="font-semibold text-sm flex items-center gap-2">
+                  <i data-lucide="message-square-lock" class="w-4 h-4 text-[#0095F6]"></i>
+                  <span>Izinkan Chat Tanpa Berteman</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  Jika nonaktif, orang lain wajib saling berteman (follback) terlebih dahulu untuk mengirim pesan ke kamu.
+                </p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                <input type="checkbox" id="toggle-chat-without-friend" onchange="toggleChatWithoutFriend(this.checked)" class="sr-only peer">
                 <div class="w-11 h-6 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0095F6]"></div>
               </label>
             </div>
@@ -600,7 +628,29 @@
               </div>
             </div>
 
-            <!-- 4. Logout -->
+            <!-- 4. Cadangkan / Pulihkan Data Akun (Backup & Restore Lintas Perangkat) -->
+            <div class="p-4 space-y-2.5">
+              <div>
+                <div class="font-semibold text-sm flex items-center gap-2">
+                  <i data-lucide="database" class="w-4 h-4 text-emerald-500"></i>
+                  <span>Cadangkan & Pulihkan Data Akun</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  Data tersimpan otomatis permanen di perangkat ini (tidak hilang saat kode diperbarui). Ekspor jika ingin pindah ke perangkat/browser lain.
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <button type="button" onclick="exportDatabaseBackup()" class="px-3.5 py-2 rounded-xl bg-emerald-600/15 hover:bg-emerald-600/25 text-emerald-500 text-xs font-semibold flex items-center gap-1.5 transition">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor Backup (.json)
+                </button>
+                <label class="px-3.5 py-2 rounded-xl bg-[#0095F6]/15 hover:bg-[#0095F6]/25 text-[#0095F6] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i> Impor Backup (.json)
+                  <input type="file" accept=".json,application/json" onchange="importDatabaseBackup(this)" class="hidden" />
+                </label>
+              </div>
+            </div>
+
+            <!-- 5. Logout -->
             <div class="p-4">
               <button type="button" onclick="logoutUser()" class="w-full py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 font-semibold text-sm transition flex items-center justify-center gap-2">
                 <i data-lucide="log-out" class="w-4 h-4"></i> Keluar dari Akun (Log out)
@@ -906,7 +956,7 @@
     </div>
   </div>
 
-  <!-- MODAL 8: AKTIVITAS STORY (Penonton, Yang Like, Komentar & Balasan Pembuat Story) -->
+  <!-- MODAL 8: AKTIVITAS STORY (Penonton, Yang Like, Komentar & Balasan ke Story / ke Chat) -->
   <div id="modal-story-activity" class="hidden fixed inset-0 z-[75] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-[#12171E] border border-gray-200 dark:border-[#26303D] w-full max-w-md rounded-3xl overflow-hidden shadow-2xl animate-pop flex flex-col max-h-[82vh]">
       <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-[#222B36]">
@@ -925,15 +975,62 @@
 
 
   <!-- ===================================================================== -->
-  <!-- LOGIKA JAVASCRIPT & DATABASE LOKAL (LOCALSTORAGE)                     -->
+  <!-- LOGIKA JAVASCRIPT & DATABASE PERMANEN (LOCALSTORAGE + INDEXEDDB)      -->
   <!-- ===================================================================== -->
   <script>
     // =========================================================================
-    // 1. INISIALISASI DATABASE PERSISTEN (localStorage)
+    // 1. INISIALISASI DATABASE PERMANEN (Tidak hilang saat update kode)
     // =========================================================================
     const DB_KEY = 'sosmedgram_db_v3';
+    const LEGACY_DB_KEYS = ['sosmedgram_db_v2', 'sosmedgram_db_v1', 'sosmedgram_db'];
     const SESSION_KEY = 'sosmedgram_current_user_id_v3';
     const THEME_KEY = 'sosmedgram_theme';
+    const IDB_NAME = 'SosmedgramPermanentDB';
+    const IDB_STORE = 'stateStore';
+
+    // IndexedDB Mirror untuk penyimpanan kapasitas besar (foto/video) & anti-reset
+    function idbSave(data) {
+      try {
+        if (!window.indexedDB) return;
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+          const idb = e.target.result;
+          if (!idb.objectStoreNames.contains(IDB_STORE)) {
+            idb.createObjectStore(IDB_STORE);
+          }
+        };
+        req.onsuccess = (e) => {
+          const idb = e.target.result;
+          const tx = idb.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).put(data, DB_KEY);
+        };
+      } catch (err) {}
+    }
+
+    function idbLoad() {
+      return new Promise((resolve) => {
+        try {
+          if (!window.indexedDB) return resolve(null);
+          const req = indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const idb = e.target.result;
+            if (!idb.objectStoreNames.contains(IDB_STORE)) {
+              idb.createObjectStore(IDB_STORE);
+            }
+          };
+          req.onsuccess = (e) => {
+            const idb = e.target.result;
+            const tx = idb.transaction(IDB_STORE, 'readonly');
+            const getReq = tx.objectStore(IDB_STORE).get(DB_KEY);
+            getReq.onsuccess = () => resolve(getReq.result || null);
+            getReq.onerror = () => resolve(null);
+          };
+          req.onerror = () => resolve(null);
+        } catch (err) {
+          resolve(null);
+        }
+      });
+    }
 
     // Helper SVG Centang Biru yang Jelas & Tajam
     function verifiedBadgeHTML(size = 'w-4 h-4') {
@@ -965,6 +1062,15 @@
       const aFollowsB = (userB.followers || []).includes(userA.id);
       const bFollowsA = (userA.followers || []).includes(userB.id);
       return aFollowsB && bFollowsA;
+    }
+
+    // Helper Cek Apakah Dua Pengguna Bisa Saling Chat
+    function canChatBetween(userA, userB) {
+      if (!userA || !userB) return false;
+      if (userA.isAdmin || userB.isAdmin) return true;
+      if (areMutualFriends(userA, userB)) return true;
+      // Bisa chat tanpa berteman hanya jika kedua akun mengizinkannya (tidak mengunci wajib berteman)
+      return !!userA.allowChatWithoutFriend && !!userB.allowChatWithoutFriend;
     }
 
     // Format angka besar (misal 1.200.000.000.000 -> "1.2T")
@@ -1010,6 +1116,7 @@
             isVerified: true,
             verifyStatus: 'verified',
             isPrivate: false,
+            allowChatWithoutFriend: true,
             isBanned: false,
             baseFollowers: 1200000000000, // 1.2 Triliun pengikut
             followers: [],
@@ -1065,38 +1172,70 @@
       };
     }
 
+    function normalizeDB(parsed) {
+      const initial = getInitialDB();
+      if (!parsed || typeof parsed !== 'object') return initial;
+      if (!Array.isArray(parsed.users) || parsed.users.length === 0) parsed.users = initial.users;
+      if (!parsed.users.some(u => u.id === 'user_admin')) {
+        parsed.users.unshift(initial.users[0]);
+      }
+      parsed.users.forEach(u => {
+        if (!Array.isArray(u.followers)) u.followers = [];
+        if (!Array.isArray(u.following)) u.following = [];
+        if (!Array.isArray(u.highlights)) u.highlights = [];
+        if (typeof u.allowChatWithoutFriend !== 'boolean') {
+          u.allowChatWithoutFriend = !!u.isAdmin;
+        }
+      });
+      if (!Array.isArray(parsed.posts)) parsed.posts = [];
+      if (!Array.isArray(parsed.stories)) parsed.stories = [];
+      if (!Array.isArray(parsed.messages)) parsed.messages = [];
+      if (!Array.isArray(parsed.notifications)) parsed.notifications = [];
+      if (!Array.isArray(parsed.reports)) parsed.reports = [];
+      parsed.posts.forEach(p => {
+        if (!Array.isArray(p.reposts)) p.reposts = [];
+        if (!Array.isArray(p.likes)) p.likes = [];
+        if (!Array.isArray(p.comments)) p.comments = [];
+      });
+      parsed.stories.forEach(s => {
+        if (!Array.isArray(s.viewers)) s.viewers = [];
+        if (!Array.isArray(s.likes)) s.likes = [];
+        if (!Array.isArray(s.comments)) s.comments = [];
+        s.comments.forEach(c => {
+          if (!Array.isArray(c.replies)) c.replies = [];
+        });
+      });
+      return parsed;
+    }
+
     function loadDB() {
       try {
-        const raw = localStorage.getItem(DB_KEY);
+        let raw = localStorage.getItem(DB_KEY);
+        // Migrasi otomatis jika ada data dari versi lama agar tidak hilang saat update
+        if (!raw) {
+          for (const legacyKey of LEGACY_DB_KEYS) {
+            const legacyRaw = localStorage.getItem(legacyKey);
+            if (legacyRaw) {
+              raw = legacyRaw;
+              break;
+            }
+          }
+        }
         if (!raw) {
           const initial = getInitialDB();
           saveDB(initial);
           return initial;
         }
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed.messages)) parsed.messages = [];
-        if (!Array.isArray(parsed.notifications)) parsed.notifications = [];
-        if (!Array.isArray(parsed.reports)) parsed.reports = [];
-        (parsed.posts || []).forEach(p => {
-          if (!Array.isArray(p.reposts)) p.reposts = [];
-          if (!Array.isArray(p.likes)) p.likes = [];
-          if (!Array.isArray(p.comments)) p.comments = [];
-        });
-        (parsed.stories || []).forEach(s => {
-          if (!Array.isArray(s.viewers)) s.viewers = [];
-          if (!Array.isArray(s.likes)) s.likes = [];
-          if (!Array.isArray(s.comments)) s.comments = [];
-          s.comments.forEach(c => {
-            if (!Array.isArray(c.replies)) c.replies = [];
-          });
-        });
-        return parsed;
+        const normalized = normalizeDB(JSON.parse(raw));
+        saveDB(normalized);
+        return normalized;
       } catch (e) {
         return getInitialDB();
       }
     }
 
     function saveDB(data) {
+      idbSave(data);
       try {
         localStorage.setItem(DB_KEY, JSON.stringify(data));
       } catch (e) {
@@ -1104,8 +1243,44 @@
       }
     }
 
+    function exportDatabaseBackup() {
+      try {
+        const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sosmedgram_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('File backup akun & postingan berhasil diunduh!', 'success');
+      } catch (err) {
+        showToast('Gagal mengekspor data backup.', 'error');
+      }
+    }
+
+    function importDatabaseBackup(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = normalizeDB(JSON.parse(e.target.result));
+          db = imported;
+          saveDB(db);
+          showToast('Data akun & seluruh postingan berhasil dipulihkan!', 'success');
+          initApp();
+        } catch (err) {
+          showToast('File backup tidak valid!', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
     let db = loadDB();
-    let currentUserId = localStorage.getItem(SESSION_KEY) || null;
+    let currentUserId = localStorage.getItem(SESSION_KEY) || localStorage.getItem('sosmedgram_current_user_id_v2') || null;
+    if (currentUserId) localStorage.setItem(SESSION_KEY, currentUserId);
     let currentView = 'home';
     let viewingProfileId = null;
     let exploreFilter = 'all';
@@ -1251,6 +1426,7 @@
         isVerified: false,
         verifyStatus: 'none',
         isPrivate: false,
+        allowChatWithoutFriend: false, // Default wajib berteman dulu untuk chat
         isBanned: false,
         baseFollowers: 0,
         followers: [], // 0 pengikut
@@ -1455,7 +1631,7 @@
                 </div>
               </div>
               ${!isMe ? `
-                <button type="button" onclick="toggleFollowFromModal('${u.id}', '${title.replace(/'/g, "\\'")}', ${JSON.stringify(userIds).replace(/"/g, '&quot;')}, '${extraSubtitle.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition ${btnClass}">
+                <button type="button" onclick="toggleFollowFromModal('${u.id}', '${title.replace(/'/g, "\'")}', ${JSON.stringify(userIds).replace(/"/g, '&quot;')}, '${extraSubtitle.replace(/'/g, "\'")}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition ${btnClass}">
                   ${btnText}
                 </button>
               ` : `<span class="text-[11px] text-gray-400 font-medium">Anda</span>`}
@@ -1500,6 +1676,11 @@
     function openChatWithUser(partnerId) {
       activeChatPartnerId = partnerId;
       navigateTo('messages');
+      if (window.innerWidth < 640) {
+        document.getElementById('chat-list-pane').classList.add('hidden');
+        document.getElementById('chat-room-pane').classList.remove('hidden');
+        document.getElementById('chat-room-pane').classList.add('flex');
+      }
     }
 
     function renderChatView() {
@@ -1513,7 +1694,7 @@
       const listEl = document.getElementById('chat-threads-list');
       const q = searchQuery.trim().toLowerCase();
 
-      // Semua user lain yang aktif
+      // Semua user lain yang aktif (bisa dicari walaupun belum berteman)
       let otherUsers = db.users.filter(u => u.id !== currentUser.id && !u.isBanned);
 
       if (q) {
@@ -1521,13 +1702,16 @@
           u.username.toLowerCase().includes(q) || u.fullName.toLowerCase().includes(q)
         );
       } else {
-        // Urutkan: yang punya riwayat chat di atas, lalu sisanya
+        // Urutkan: yang punya riwayat chat di atas, lalu yang saling berteman, lalu sisanya
         otherUsers.sort((a, b) => {
           const msgsA = db.messages.filter(m => (m.fromUserId === currentUser.id && m.toUserId === a.id) || (m.fromUserId === a.id && m.toUserId === currentUser.id));
           const msgsB = db.messages.filter(m => (m.fromUserId === currentUser.id && m.toUserId === b.id) || (m.fromUserId === b.id && m.toUserId === currentUser.id));
           const lastA = msgsA.length ? msgsA[msgsA.length - 1].createdAt : 0;
           const lastB = msgsB.length ? msgsB[msgsB.length - 1].createdAt : 0;
-          return lastB - lastA;
+          if (lastB !== lastA) return lastB - lastA;
+          const friendA = areMutualFriends(currentUser, a) ? 1 : 0;
+          const friendB = areMutualFriends(currentUser, b) ? 1 : 0;
+          return friendB - friendA;
         });
       }
 
@@ -1544,17 +1728,19 @@
         const lastMsg = threadMsgs.length ? threadMsgs[threadMsgs.length - 1] : null;
         const unreadFromUser = threadMsgs.filter(m => m.fromUserId === u.id && m.toUserId === currentUser.id && !m.isRead).length;
         const isActive = activeChatPartnerId === u.id;
+        const isFriend = areMutualFriends(currentUser, u);
 
         return `
           <div onclick="selectChatPartner('${u.id}')" class="p-3.5 flex items-center justify-between gap-3 cursor-pointer transition ${isActive ? 'bg-[#0095F6]/10' : 'hover:bg-gray-100 dark:hover:bg-[#161C24]'}">
             <div class="flex items-center gap-3 min-w-0 flex-1">
               ${renderAvatar(u, 'w-11 h-11')}
               <div class="min-w-0 flex-1">
-                <div class="text-sm font-bold flex items-center truncate">
-                  ${u.username} ${u.isVerified ? verifiedBadgeHTML('w-3.5 h-3.5') : ''}
+                <div class="text-sm font-bold flex items-center gap-1.5 truncate">
+                  <span class="truncate flex items-center">${u.username} ${u.isVerified ? verifiedBadgeHTML('w-3.5 h-3.5') : ''}</span>
+                  ${isFriend ? `<span class="px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-500 text-[9px] font-semibold shrink-0">Teman</span>` : `<span class="px-1.5 py-0.2 rounded bg-gray-200 dark:bg-[#1C232D] text-gray-500 text-[9px] font-semibold shrink-0">Belum Berteman</span>`}
                 </div>
                 <p class="text-xs truncate ${unreadFromUser > 0 ? 'font-bold text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}">
-                  ${lastMsg ? `${lastMsg.fromUserId === currentUser.id ? 'Anda: ' : ''}${lastMsg.text}` : 'Ketuk untuk mulai chat'}
+                  ${lastMsg ? `${lastMsg.fromUserId === currentUser.id ? 'Anda: ' : ''}${lastMsg.text}` : (canChatBetween(currentUser, u) ? 'Ketuk untuk mulai chat' : 'Harus berteman dulu untuk chat')}
                 </p>
               </div>
             </div>
@@ -1581,6 +1767,12 @@
       document.getElementById('chat-room-pane').classList.add('hidden');
       document.getElementById('chat-room-pane').classList.remove('flex');
       document.getElementById('chat-list-pane').classList.remove('hidden');
+    }
+
+    function toggleFollowFromChat(partnerId) {
+      toggleFollow(partnerId, false);
+      renderChatRoom();
+      renderChatSidebar(document.getElementById('chat-search-user')?.value || '');
     }
 
     function renderChatRoom() {
@@ -1622,6 +1814,22 @@
         (m.fromUserId === partner.id && m.toUserId === currentUser.id)
       );
 
+      const allowedToChat = canChatBetween(currentUser, partner);
+      const isFollowing = partner.followers.includes(currentUser.id);
+      const theyFollowMe = currentUser.followers.includes(partner.id);
+      const isMutual = areMutualFriends(currentUser, partner);
+
+      let quickFollowBtn = '';
+      if (!isMutual) {
+        if (isFollowing && !theyFollowMe) {
+          quickFollowBtn = `<span class="px-3 py-1.5 rounded-full bg-gray-200 dark:bg-[#1C232D] text-gray-600 dark:text-gray-300 text-xs font-semibold">Menunggu Follback</span>`;
+        } else if (theyFollowMe && !isFollowing) {
+          quickFollowBtn = `<button type="button" onclick="toggleFollowFromChat('${partner.id}')" class="px-3.5 py-1.5 rounded-full bg-[#0095F6] hover:bg-[#1877F2] text-white text-xs font-bold transition">Follback Sekarang</button>`;
+        } else {
+          quickFollowBtn = `<button type="button" onclick="toggleFollowFromChat('${partner.id}')" class="px-3.5 py-1.5 rounded-full bg-[#0095F6] hover:bg-[#1877F2] text-white text-xs font-bold transition">Ikuti untuk Berteman</button>`;
+        }
+      }
+
       roomPane.innerHTML = `
         <!-- Header Chat Room -->
         <div class="p-3.5 border-b border-gray-200 dark:border-[#222B36] flex items-center justify-between bg-gray-50/70 dark:bg-[#12171E]">
@@ -1635,7 +1843,10 @@
                 <div class="text-sm font-bold flex items-center">
                   ${partner.username} ${partner.isVerified ? verifiedBadgeHTML('w-4 h-4') : ''}
                 </div>
-                <div class="text-[11px] text-gray-500 dark:text-gray-400">${partner.fullName}</div>
+                <div class="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                  <span>${partner.fullName}</span>
+                  ${isMutual ? '<span class="text-emerald-500 font-semibold">• Berteman</span>' : ''}
+                </div>
               </div>
             </div>
           </div>
@@ -1652,12 +1863,21 @@
               <div class="font-bold text-sm flex items-center justify-center">
                 ${partner.username} ${partner.isVerified ? verifiedBadgeHTML('w-4 h-4') : ''}
               </div>
-              <p class="text-xs text-gray-400">Kirim pesan pertama untuk memulai obrolan dengan @${partner.username}.</p>
+              <p class="text-xs text-gray-400">
+                ${allowedToChat 
+                  ? `Kirim pesan pertama untuk memulai obrolan dengan @${partner.username}.` 
+                  : `Kalian belum saling berteman. Saling ikuti (follback) dulu untuk mulai mengobrol.`}
+              </p>
             </div>
           ` : conversation.map(m => {
             const isMine = m.fromUserId === currentUser.id;
             return `
               <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'}">
+                ${m.storyReplyContext ? `
+                  <div class="mb-1 px-3 py-1 rounded-xl bg-gray-200/80 dark:bg-[#161C24] border-l-2 border-[#0095F6] text-[11px] text-gray-600 dark:text-gray-300 max-w-[78%]">
+                    <span class="font-semibold text-[#0095F6]">Membalas komentar story:</span> "${m.storyReplyContext}"
+                  </div>
+                ` : ''}
                 <div class="max-w-[78%] px-4 py-2.5 rounded-2xl text-sm ${isMine ? 'bg-[#0095F6] text-white rounded-br-sm' : 'bg-gray-100 dark:bg-[#1C232D] text-gray-900 dark:text-white rounded-bl-sm'}">
                   ${m.text}
                 </div>
@@ -1667,21 +1887,36 @@
           }).join('')}
         </div>
 
-        <!-- Input Kirim Pesan -->
-        <form onsubmit="event.preventDefault(); sendChatMessage();" class="p-3 border-t border-gray-200 dark:border-[#222B36] flex items-center gap-2 bg-gray-50/70 dark:bg-[#12171E]">
-          <input 
-            type="text" 
-            id="chat-message-input" 
-            placeholder="Tulis pesan ke @${partner.username}..." 
-            required
-            autocomplete="off"
-            class="flex-1 px-4 py-2.5 rounded-full bg-white dark:bg-[#161C24] border border-gray-200 dark:border-[#2A3441] text-sm focus:outline-none focus:border-[#0095F6]"
-          />
-          <button type="submit" class="px-4 py-2.5 rounded-full bg-[#0095F6] hover:bg-[#1877F2] text-white text-xs font-bold transition flex items-center gap-1.5">
-            <span>Kirim</span>
-            <i data-lucide="send" class="w-3.5 h-3.5"></i>
-          </button>
-        </form>
+        <!-- Bagian Bawah Chat: Terkunci jika belum berteman (kecuali pengaturan mengizinkan) -->
+        ${allowedToChat ? `
+          <form onsubmit="event.preventDefault(); sendChatMessage();" class="p-3 border-t border-gray-200 dark:border-[#222B36] flex items-center gap-2 bg-gray-50/70 dark:bg-[#12171E]">
+            <input 
+              type="text" 
+              id="chat-message-input" 
+              placeholder="Tulis pesan ke @${partner.username}..." 
+              required
+              autocomplete="off"
+              class="flex-1 px-4 py-2.5 rounded-full bg-white dark:bg-[#161C24] border border-gray-200 dark:border-[#2A3441] text-sm focus:outline-none focus:border-[#0095F6]"
+            />
+            <button type="submit" class="px-4 py-2.5 rounded-full bg-[#0095F6] hover:bg-[#1877F2] text-white text-xs font-bold transition flex items-center gap-1.5">
+              <span>Kirim</span>
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            </button>
+          </form>
+        ` : `
+          <div class="p-4 border-t border-gray-200 dark:border-[#222B36] bg-gray-100/90 dark:bg-[#12171E] text-center space-y-2">
+            <div class="text-xs font-bold text-amber-500 flex items-center justify-center gap-1.5">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+              <span>Anda harus berteman dulu</span>
+            </div>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+              Saling ikuti (follback) dengan @${partner.username} atau aktifkan "Izinkan Chat Tanpa Berteman" di Pengaturan.
+            </p>
+            <div class="pt-0.5">
+              ${quickFollowBtn}
+            </div>
+          </div>
+        `}
       `;
 
       refreshIcons();
@@ -1693,6 +1928,13 @@
       const currentUser = getCurrentUser();
       const input = document.getElementById('chat-message-input');
       if (!input || !activeChatPartnerId) return;
+
+      const partner = getUserById(activeChatPartnerId);
+      if (!partner || !canChatBetween(currentUser, partner)) {
+        showToast('Anda harus berteman dulu untuk mengirim pesan!', 'error');
+        renderChatRoom();
+        return;
+      }
 
       const text = input.value.trim();
       if (!text) return;
@@ -1812,7 +2054,7 @@
     }
 
     // =========================================================================
-    // 8. BERANDA: STORIES (VIEWERS, LIKE, KOMENTAR, BALAS, SOROTAN) & FEED
+    // 8. BERANDA: STORIES (VIEWERS, LIKE, KOMENTAR, BALAS KE CHAT, SOROTAN) & FEED
     // =========================================================================
     function renderStoriesBar() {
       const user = getCurrentUser();
@@ -2036,7 +2278,7 @@
       viewStory(storyId);
     }
 
-    // Modal Aktivitas Story (Penonton, Yang Like, Komentar & Form Balas Komentar)
+    // Modal Aktivitas Story (Penonton, Yang Like, Komentar & Balas ke Story atau Langsung ke Chat)
     function openStoryActivityModal(storyId) {
       const story = db.stories.find(s => s.id === storyId);
       if (!story) return;
@@ -2063,7 +2305,7 @@
           </div>
         </div>
 
-        <!-- Daftar Komentar Masuk & Balas -->
+        <!-- Daftar Komentar Masuk & Balas (Bisa Balas ke Story atau Langsung ke Chat) -->
         <div class="p-4 space-y-3">
           <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Komentar Story (${comments.length})</h4>
           ${comments.length === 0 ? `<p class="text-xs text-gray-400">Belum ada komentar pada story ini.</p>` : comments.map(c => {
@@ -2083,14 +2325,21 @@
 
                 ${(c.replies || []).map(r => `
                   <div class="ml-7 pl-2.5 border-l-2 border-[#0095F6] text-xs text-gray-600 dark:text-gray-300">
-                    <span class="font-bold text-[#0095F6]">Balasan Anda:</span> ${r.text}
+                    <span class="font-bold text-[#0095F6]">Balasan Anda${r.sentToChat ? ' (terkirim ke chat)' : ''}:</span> ${r.text}
                   </div>
                 `).join('')}
 
-                <form onsubmit="event.preventDefault(); replyStoryComment('${story.id}', '${c.id}');" class="flex items-center gap-1.5 pt-1">
-                  <input type="text" id="reply-story-input-${c.id}" placeholder="Balas komentar @${cUser.username}..." required class="flex-1 px-3 py-1.5 rounded-full bg-white dark:bg-[#0B0F14] border border-gray-200 dark:border-[#2A3441] text-xs focus:outline-none focus:border-[#0095F6]" />
-                  <button type="submit" class="px-3 py-1.5 rounded-full bg-[#0095F6] text-white text-[11px] font-bold">Balas</button>
-                </form>
+                <div class="space-y-1.5 pt-1">
+                  <input type="text" id="reply-story-input-${c.id}" placeholder="Tulis balasan untuk @${cUser.username}..." class="w-full px-3 py-1.5 rounded-full bg-white dark:bg-[#0B0F14] border border-gray-200 dark:border-[#2A3441] text-xs focus:outline-none focus:border-[#0095F6]" />
+                  <div class="flex items-center justify-end gap-1.5">
+                    <button type="button" onclick="replyStoryComment('${story.id}', '${c.id}', false)" class="px-3 py-1.5 rounded-full bg-gray-200 dark:bg-[#222B36] hover:bg-gray-300 dark:hover:bg-[#2E3947] text-[11px] font-semibold transition">
+                      Balas di Story
+                    </button>
+                    <button type="button" onclick="replyStoryComment('${story.id}', '${c.id}', true)" class="px-3 py-1.5 rounded-full bg-[#0095F6] hover:bg-[#1877F2] text-white text-[11px] font-bold flex items-center gap-1 transition">
+                      <i data-lucide="send" class="w-3 h-3"></i> Balas ke Chat
+                    </button>
+                  </div>
+                </div>
               </div>
             `;
           }).join('')}
@@ -2138,11 +2387,14 @@
       refreshIcons();
     }
 
-    function replyStoryComment(storyId, commentId) {
+    function replyStoryComment(storyId, commentId, alsoSendToChat = false) {
       const currentUser = getCurrentUser();
       const input = document.getElementById('reply-story-input-' + commentId);
       const text = input ? input.value.trim() : '';
-      if (!text) return;
+      if (!text) {
+        showToast('Tulis balasan terlebih dahulu!', 'error');
+        return;
+      }
 
       const story = db.stories.find(s => s.id === storyId);
       if (!story) return;
@@ -2154,8 +2406,28 @@
         id: 'sr_' + Date.now(),
         userId: currentUser.id,
         text,
+        sentToChat: alsoSendToChat,
         createdAt: Date.now()
       });
+
+      if (alsoSendToChat) {
+        db.messages.push({
+          id: 'msg_' + Date.now(),
+          fromUserId: currentUser.id,
+          toUserId: comment.userId,
+          text,
+          storyReplyContext: comment.text,
+          isRead: false,
+          createdAt: Date.now()
+        });
+        addNotification(comment.userId, currentUser.id, 'chat', `membalas komentar story kamu lewat chat: "${text}"`);
+        saveDB(db);
+        closeModal('modal-story-activity');
+        closeModal('modal-viewer');
+        showToast('Balasan komentar story terkirim ke Chat!', 'success');
+        openChatWithUser(comment.userId);
+        return;
+      }
 
       addNotification(comment.userId, currentUser.id, 'story_reply', `membalas komentar story kamu: "${text}"`);
       saveDB(db);
@@ -3304,7 +3576,7 @@
     }
 
     // =========================================================================
-    // 12. FASE 6: PENGATURAN (Verifikasi Centang Biru, Privat/Publik, Tema)
+    // 12. FASE 6: PENGATURAN (Verifikasi Centang Biru, Privat/Publik, Chat, Tema)
     // =========================================================================
     function renderSettings() {
       const user = getCurrentUser();
@@ -3325,6 +3597,9 @@
       const privToggle = document.getElementById('toggle-private');
       privToggle.checked = !!user.isPrivate;
 
+      const chatToggle = document.getElementById('toggle-chat-without-friend');
+      if (chatToggle) chatToggle.checked = !!user.allowChatWithoutFriend;
+
       const currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
       updateThemeButtons(currentTheme);
       refreshIcons();
@@ -3344,7 +3619,15 @@
       user.isPrivate = isPrivate;
       saveDB(db);
       renderSettings();
-      showToast(isPrivate ? 'Akun diubah menjadi PRIVAT.' : 'Akun diubah menjadi PUBLIK.', 'info');
+      showToast(isPrivate ? 'Akun diubah menjadi PRIVAT (hanya teman saling follback yang bisa lihat).' : 'Akun diubah menjadi PUBLIK.', 'info');
+    }
+
+    function toggleChatWithoutFriend(allow) {
+      const user = getCurrentUser();
+      user.allowChatWithoutFriend = allow;
+      saveDB(db);
+      renderSettings();
+      showToast(allow ? 'Chat tanpa berteman DIAKTIFKAN.' : 'Chat wajib saling berteman dulu DIAKTIFKAN.', 'info');
     }
 
     // =========================================================================
@@ -3545,12 +3828,22 @@
     }
 
     // =========================================================================
-    // 14. BOOTSTRAP ON LOAD
+    // 14. BOOTSTRAP ON LOAD (Sinkronisasi IndexedDB & LocalStorage)
     // =========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
       setTheme(savedTheme);
       refreshIcons();
+
+      // Pulihkan otomatis dari IndexedDB jika localStorage kosong setelah update
+      const idbData = await idbLoad();
+      if (idbData && (!localStorage.getItem(DB_KEY) || (idbData.users && idbData.users.length > db.users.length))) {
+        db = normalizeDB(idbData);
+        try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (e) {}
+      } else {
+        idbSave(db);
+      }
+
       initApp();
     });
   </script>
